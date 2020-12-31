@@ -1,0 +1,37 @@
+---
+- name: ex1_alt
+  gather_facts: off
+  hosts: nxos
+  vars:
+    fsm_template1: "cisco_nxos_show_lldp_neighbors.textfsm"
+  tasks:
+    - name: capture show
+      nxos_command:
+        commands: show lldp neighbors
+      register: out
+
+    - name: parse show
+      set_fact:
+        show_out: "{{ out.stdout[0] | parse_cli_textfsm(fsm_template1) }}"
+      
+    - name: extract elements
+      set_fact:
+        local_int: "{{ show_out | map(attribute='LOCAL_INTERFACE') | list }}"
+        remote_neighbor: "{{ show_out | map(attribute='NEIGHBOR') | list }}"
+
+    - name: combine elements
+      set_fact:
+        combined_lists: "{{ local_int | zip(remote_neighbor) | list }}"
+
+    - name: combined lists
+      debug:
+        var: combined_lists
+
+    - name: convert list to dict
+      set_fact:
+        lldp_map: "{{ dict(combined_lists) }}"
+
+    - name: dict
+      debug:
+        var: lldp_map
+

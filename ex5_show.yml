@@ -1,0 +1,15 @@
+---
+- name: ex5 show
+  gather_facts: off
+  hosts: nxos
+  tasks:
+    - name: capture show
+      nxos_command:
+        commands: show vlan | json
+      register: out
+
+    - name: print show
+      debug:
+        var: out
+
+      

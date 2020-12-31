@@ -1,0 +1,29 @@
+---
+- name: nxos1 conf
+  gather_facts: off
+  hosts: nxos1
+  tasks:
+
+    - name: conf vlans
+      nxos_vlans:
+        config:
+          - vlan_id: 100
+            name: blue100
+          - vlan_id: 101
+            name: blue101
+        state: merged
+
+- name: nxos2 conf
+  gather_facts: off
+  hosts: nxos2
+  tasks:
+
+    - name: conf vlans
+      nxos_vlans:
+        config:
+          - vlan_id: 200
+            name: red200
+          - vlan_id: 201
+            name: red201
+        state: merged
+

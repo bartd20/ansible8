@@ -1,0 +1,17 @@
+---
+
+- name: Exercise6e - here there be errors.
+  hosts: juniper
+  gather_facts: False
+
+  tasks:
+
+#nxos_command instead of junos_command
+    - name: Executing command
+      junos_command:
+        commands: show interfaces terse
+      register: output
+
+    - debug:
+        msg: "{{ output }}"
+

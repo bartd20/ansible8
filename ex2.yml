@@ -1,0 +1,14 @@
+---
+- name: ex2
+  gather_facts: off
+  hosts: arista
+  tasks:
+    - name: capture show
+      eos_command:
+        commands: show vlan
+      register: out
+
+    - name: print capture
+      debug:
+        var: out
+

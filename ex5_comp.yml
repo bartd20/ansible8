@@ -1,0 +1,30 @@
+---
+- name: ex5 compare
+  gather_facts: off
+  hosts: nxos
+  tasks:
+    - name: capture show
+      nxos_command:
+        commands: show vlan | json
+      register: out
+
+    - name: extract vlans
+      set_fact:
+        vlan_list: "{{ out.stdout[0]['TABLE_vlanbrief']['ROW_vlanbrief'] | map(attribute='vlanshowbr-vlanid') | list }}"
+
+    - name: print vlans
+      debug:
+        var: vlan_list
+
+    - name: common elements
+      debug: 
+        msg: "{{ hostvars['nxos1']['vlan_list'] | intersect(hostvars['nxos2']['vlan_list']) }}"
+
+       
+    - name: unique elements on nxos1
+      debug: 
+        msg: "{{ hostvars['nxos1']['vlan_list'] | difference(hostvars['nxos2']['vlan_list']) }}"
+
+    - name: unique elements on nxos2
+      debug: 
+        msg: "{{ hostvars['nxos2']['vlan_list'] | difference(hostvars['nxos1']['vlan_list']) }}"

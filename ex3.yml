@@ -1,0 +1,36 @@
+---
+- name: ex3
+  gather_facts: off
+  hosts: arista
+  tasks:
+    - name: capture show
+      eos_command:
+        commands: show mac address-table | json
+      register: out
+
+    - name: print show
+      debug:
+        var: out
+
+    - name: map elements
+      set_fact:
+        mac_addr: "{{ out.stdout[0]['unicastTable']['tableEntries'] | map(attribute='macAddress') | list }}"
+        interface: "{{ out.stdout[0]['unicastTable']['tableEntries'] | map(attribute='interface') | list }}"
+
+    - name: combine elements
+      set_fact:
+        combined_elem: "{{ mac_addr | zip(interface) | list }}"
+
+    - name: print combined elems
+      debug:
+        var: combined_elem
+
+    - name: convert list to dict
+      set_fact:
+        mac_addr_map: "{{ dict(combined_elem) }}"
+    
+    - name: print dict
+      debug:
+        var: mac_addr_map
+
+
